@@ -1,9 +1,7 @@
-ame: Deploy EKS Cluster
+name: Deploy EKS Cluster - CI
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 
 jobs:
@@ -22,3 +20,22 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Get
+        working-directory: "./Terraform-AWS-Resources/EKS-Worker-Nodes"
+        run: terraform get --update
+
+      - name: Terraform Init
+        id: init
+        working-directory: "./Terraform-AWS-Resources/EKS-Worker-Nodes"
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: "./Terraform-AWS-Resources/EKS-Worker-Nodes"
+        run: terraform plan -no-color
+        continue-on-error: true
+
+      - name: Terraform Apply
+        working-directory: "./Terraform-AWS-Resources/EKS-Worker-Nodes"
+        run: terraform apply -auto-approve
